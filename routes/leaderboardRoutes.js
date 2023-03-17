@@ -92,6 +92,38 @@ router.patch("/:playerId/lost", (req, res) => {
   });
 });
 
+router.post("/", (req, res) => {
+  fs.readFile("./data/players.json", (err, data) => {
+    if (err) {
+      return res.status(500).json({
+        error: true,
+        message: "cant read file",
+      });
+    }
+
+    const players = JSON.parse(data);
+    const newPlayer = {
+      id: uuid.v4(),
+      name: req.body.name,
+      gamesWon: 0,
+      gamesPlayed: 0,
+    };
+
+    players.push(newPlayer);
+
+    fs.writeFile("./data/players.json", JSON.stringify(players), (err) => {
+      if (err) {
+        return res.status(500).json({
+          error: true,
+          message: "cant write file",
+        });
+      }
+
+      res.json(newPlayer);
+    });
+  });
+});
+
 // router.patch("/score", (req, res) => {
 //   fs.readFile("./data/players.json", (err, data) => {
 //     if (err) {
